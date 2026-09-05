@@ -1,1 +1,7 @@
-
+import { useEffect, useState } from 'react';
+export default function Home(){
+ const [league,setLeague]=useState('NFL'); const [data,setData]=useState(null); const [loading,setLoading]=useState(false); const [error,setError]=useState('');
+ async function run(){setLoading(true);setError('');try{const r=await fetch(`/api/sharp-${league.toLowerCase()}`);const j=await r.json();if(!r.ok)throw new Error(j.error||'Error');setData(j);}catch(e){setError(e.message);setData(null)}finally{setLoading(false)}}
+ useEffect(()=>{run()},[league]);
+ return <main style={{fontFamily:'Arial,sans-serif',maxWidth:1100,margin:'0 auto',padding:24}}><h1>Tracke Sharp</h1><p>Market intelligence — MLB y NFL separados.</p><div style={{display:'flex',gap:8,marginBottom:20}}>{['NFL','MLB'].map(x=><button key={x} onClick={()=>setLeague(x)} style={{padding:'10px 18px',fontWeight:league===x?'700':'400'}}>{x}</button>)}<button onClick={run} disabled={loading} style={{padding:'10px 18px'}}>{loading?'Analizando…':'Actualizar'}</button></div>{error&&<p style={{color:'crimson'}}>Error: {error}</p>}{data&&<><p><b>{data.league}</b> · {data.count} señales · {data.checkedAt||''}</p>{!data.alerts?.length?<p>No hay evidencia suficiente para una señal SHARP.</p>:<table width="100%" cellPadding="8" style={{borderCollapse:'collapse'}}><thead><tr><th align="left">Partido</th><th>Equipo</th><th>Tickets</th><th>Money</th><th>Div.</th><th>Score</th><th>Señal</th></tr></thead><tbody>{data.alerts.map((a,i)=><tr key={i} style={{borderTop:'1px solid #ddd'}}><td>{a.game}</td><td>{a.team}</td><td align="center">{a.tickets}%</td><td align="center">{a.money}%</td><td align="center">{a.divergence?.toFixed(0)}</td><td align="center"><b>{a.score}</b></td><td>{a.label}</td></tr>)}</tbody></table>}</>}</main>
+}
