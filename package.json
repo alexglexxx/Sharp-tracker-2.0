@@ -1,7 +1,19 @@
 {
-  "name": "tracke-sharp",
+  "name": "sharp-tracker-2.0",
   "version": "2.0.0",
   "private": true,
-  "scripts": {"dev":"next dev","build":"next build","start":"next start"},
-  "dependencies": {"next":"14.2.0","react":"18.3.1","react-dom":"18.3.1"}
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "next": "14.2.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
 }
