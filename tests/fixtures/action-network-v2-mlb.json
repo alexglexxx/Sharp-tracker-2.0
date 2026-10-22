@@ -1,0 +1,105 @@
+{
+  "games": [
+    {
+      "id": 303723,
+      "status": "scheduled",
+      "start_time": "2026-10-24T00:00:00.000Z",
+      "away_team_id": 189,
+      "home_team_id": 208,
+      "teams": [
+        {
+          "id": 189,
+          "full_name": "Tampa Bay Rays",
+          "display_name": "Rays"
+        },
+        {
+          "id": 208,
+          "full_name": "Milwaukee Brewers",
+          "display_name": "Brewers"
+        }
+      ],
+      "markets": {
+        "15": {
+          "event": {
+            "moneyline": [
+              {
+                "book_id": 15,
+                "type": "moneyline",
+                "side": "away",
+                "team_id": 189,
+                "odds": 135,
+                "value": 0,
+                "bet_info": {
+                  "tickets": {
+                    "value": 0,
+                    "percent": 27
+                  },
+                  "money": {
+                    "value": 0,
+                    "percent": 33
+                  }
+                }
+              },
+              {
+                "book_id": 15,
+                "type": "moneyline",
+                "side": "home",
+                "team_id": 208,
+                "odds": -160,
+                "value": 0,
+                "bet_info": {
+                  "tickets": {
+                    "value": 0,
+                    "percent": 73
+                  },
+                  "money": {
+                    "value": 0,
+                    "percent": 67
+                  }
+                }
+              }
+            ],
+            "spread": [
+              {
+                "book_id": 15,
+                "type": "spread",
+                "side": "home",
+                "team_id": 208,
+                "odds": 148,
+                "value": -1.5,
+                "bet_info": {
+                  "tickets": {
+                    "value": 0,
+                    "percent": 86
+                  },
+                  "money": {
+                    "value": 0,
+                    "percent": 79
+                  }
+                }
+              },
+              {
+                "book_id": 15,
+                "type": "spread",
+                "side": "away",
+                "team_id": 189,
+                "odds": -179,
+                "value": 1.5,
+                "bet_info": {
+                  "tickets": {
+                    "value": 0,
+                    "percent": 14
+                  },
+                  "money": {
+                    "value": 0,
+                    "percent": 21
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
