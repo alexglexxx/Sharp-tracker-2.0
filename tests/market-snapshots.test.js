@@ -34,6 +34,20 @@ describe('market snapshots', () => {
     expect(result.lineDelta).toBe(-0.5);
     expect(result.priceDelta).toBe(-15);
     expect(result.elapsedMinutes).toBe(5);
+    expect(result.impliedProbabilityDeltaPctPoints).toBeGreaterThan(0);
+  });
+
+  it('measures implied probability change across the even-money boundary', () => {
+    const result = compareSnapshots({ ...base, price:105 }, {
+      ...base,
+      timestamp:'2026-10-19T10:05:00.000Z',
+      price:-105,
+    });
+    expect(result.impliedProbabilityDeltaPctPoints).toBeCloseTo(2.439, 3);
+  });
+
+  it('refuses equal timestamps', () => {
+    expect(compareSnapshots(base, { ...base }).comparable).toBe(false);
   });
 
   it('refuses cross-book comparison as movement', () => {
