@@ -15,6 +15,12 @@
 - `ACTION_NETWORK_MLB_URL` / `ACTION_NETWORK_NFL_URL` — opcionales para fijar endpoints.
 - `CRON_SECRET` — recomendado para proteger ejecuciones programadas.
 
+## Estado de Action Network
+Se lee el scoreboard v2 (`/web/v2/scoreboard/{mlb|nfl}?bookIds=15&periods=event`), sin login. Tickets y money salen de `bet_info` del book 15 (consenso): moneyline para MLB, spread para NFL. Los fixtures de `tests/fixtures/` están recortados de respuestas reales.
+
+## Endpoints protegidos
+`/api/sharp-daily` y `/api/source-*` exigen `Authorization: Bearer <CRON_SECRET>`. `/api/sharp-mlb` y `/api/sharp-nfl` son públicos y se cachean 5 minutos en el CDN.
+
 ## Estado de VSiN
 El adaptador está preparado, pero el proyecto NO inventa un endpoint de VSiN. Hay que conectar aquí el endpoint/flujo real que podamos verificar y mantener. Mientras no exista, VSiN queda `available:false` y el sistema no fabrica datos.
 
