@@ -31,6 +31,34 @@ describe('SHARP FLOW evidence engine', () => {
     expect(result.evidence).not.toContain('underdog receiving disproportionately higher money');
   });
 
+  it('keeps one split source without movement at SHARP_WATCH, however lopsided', () => {
+    const result = analyzeSharpFlow({
+      tickets:10,
+      money:90,
+      sourceCount:1,
+      agreeingSources:1,
+      isUnderdog:true,
+      underdogMagnitude:250,
+      isHandicap:true,
+    });
+    expect(result.confirmations).toBe(0);
+    expect(result.label).toBe('SHARP_WATCH');
+  });
+
+  it('accepts line movement as the independent confirmation', () => {
+    const result = analyzeSharpFlow({
+      tickets:10,
+      money:90,
+      sourceCount:1,
+      agreeingSources:1,
+      isUnderdog:true,
+      underdogMagnitude:250,
+      marketMovedTowardSide:true,
+    });
+    expect(result.confirmations).toBe(1);
+    expect(result.label).toBe('SHARP_FLOW');
+  });
+
   it('never signals the public side, even with large divergence and agreement', () => {
     const result = analyzeSharpFlow({
       tickets:70,
