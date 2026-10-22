@@ -1,4 +1,4 @@
-import { runSharp } from './sharp-engine';
+import { runSharp } from '../../lib/sharp-engine';
 
 function authorized(req) {
   const secret = process.env.CRON_SECRET;
