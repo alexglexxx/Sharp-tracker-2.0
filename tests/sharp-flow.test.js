@@ -30,4 +30,15 @@ describe('SHARP FLOW evidence engine', () => {
     });
     expect(result.evidence).not.toContain('underdog receiving disproportionately higher money');
   });
+
+  it('never signals the public side, even with large divergence and agreement', () => {
+    const result = analyzeSharpFlow({
+      tickets:70,
+      money:40,
+      sourceCount:2,
+      agreeingSources:2,
+    });
+    expect(result.label).toBe('NO_SHARP_FLOW');
+    expect(result.score).toBe(0);
+  });
 });
