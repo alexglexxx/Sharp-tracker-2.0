@@ -1,18 +1,12 @@
 import { runSharp } from '../../lib/sharp-engine';
-
-function authorized(req) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) return false;
-  const value = req.headers.authorization || '';
-  return value === `Bearer ${secret}`;
-}
+import { hasCronSecret } from '../../lib/auth';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ ok:false, error:'Method not allowed' });
   }
 
-  if (!authorized(req)) {
+  if (!hasCronSecret(req)) {
     return res.status(401).json({ ok:false, error:'Unauthorized' });
   }
 
