@@ -70,6 +70,44 @@ describe('sharp engine', () => {
     expect(result.alerts[0].evidence).not.toContain('independent public-split agreement');
   });
 
+  it('treats the NFL side receiving points as the underdog', async () => {
+    const bills = 'Buffalo Bills';
+    const dolphins = 'Miami Dolphins';
+    getOdds.mockResolvedValue({
+      available:true,
+      source:'odds-api',
+      games:[{
+        league:'NFL', id:'evt-2', away:bills, home:dolphins, sides:[],
+        raw:{
+          id:'evt-2',
+          bookmakers:[{
+            key:'pinnacle',
+            markets:[{ key:'spreads', outcomes:[
+              { name:bills, price:-110, point:-3 },
+              { name:dolphins, price:-110, point:3 },
+            ] }],
+          }],
+        },
+      }],
+    });
+    getVsin.mockResolvedValue({
+      available:true,
+      source:'vsin',
+      games:[{ league:'NFL', away:bills, home:dolphins, sides:[
+        { team:bills, source:'vsin', tickets:70, money:40 },
+        { team:dolphins, source:'vsin', tickets:30, money:60 },
+      ] }],
+    });
+    getActionNetwork.mockResolvedValue({ available:false, source:'action-network', games:[] });
+
+    const result = await runSharp('NFL');
+
+    expect(result.alerts.map(a => a.team)).toEqual([dolphins]);
+    expect(result.alerts[0].isUnderdog).toBe(true);
+    expect(result.alerts[0].evidence).toContain('underdog receiving disproportionately higher money');
+    expect(result.alerts[0].evidence).not.toContain('handicap market');
+  });
+
   it('returns no alerts when splits show no meaningful divergence', async () => {
     getVsin.mockResolvedValue(splits('vsin', { tickets:52, money:50 }, { tickets:48, money:50 }));
     getActionNetwork.mockResolvedValue({ available:false, source:'action-network', games:[] });
