@@ -1,0 +1,24 @@
+name: Odds Snapshots
+
+# Vercel Hobby crons run at most once a day; line movement needs more frequent
+# snapshots. Every 3 hours costs 2 The Odds API requests per run (NFL + MLB),
+# about 16 per day.
+on:
+  schedule:
+    - cron: '17 */3 * * *'
+  workflow_dispatch:
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Capture Pinnacle lines
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SNAPSHOT_URL: https://sharp-tracker.vercel.app/api/sharp-snapshot
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::warning::CRON_SECRET repository secret is not set; skipping snapshot."
+            exit 0
+          fi
+          curl -fsS --max-time 60 -H "Authorization: Bearer $CRON_SECRET" "$SNAPSHOT_URL"

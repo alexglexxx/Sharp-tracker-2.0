@@ -108,6 +108,48 @@ describe('sharp engine', () => {
     expect(result.alerts[0].evidence).not.toContain('handicap market');
   });
 
+  it('caps a single split source at SHARP_WATCH without line movement', async () => {
+    getVsin.mockResolvedValue(splits('vsin', { tickets:72, money:40 }, { tickets:28, money:60 }));
+    getActionNetwork.mockResolvedValue({ available:false, source:'action-network', games:[] });
+
+    const result = await runSharp('MLB', undefined, { store:null });
+
+    expect(result.alerts).toHaveLength(1);
+    expect(result.alerts[0]).toMatchObject({ team:home, label:'SHARP_WATCH', confirmations:0, movement:null });
+    expect(result.sources.snapshots.available).toBe(false);
+  });
+
+  it('upgrades to SHARP_FLOW when Pinnacle moved toward the side since the opener', async () => {
+    getVsin.mockResolvedValue(splits('vsin', { tickets:72, money:40 }, { tickets:28, money:60 }));
+    getActionNetwork.mockResolvedValue({ available:false, source:'action-network', games:[] });
+    const store = {
+      getOpeners: vi.fn(async () => new Map([[`evt-1|${home}`, {
+        league:'MLB', eventId:'evt-1', team:home, bookmaker:'pinnacle', market:'h2h',
+        price:150, point:null, timestamp:'2026-10-22T10:00:00.000Z',
+      }]])),
+    };
+
+    const result = await runSharp('MLB', undefined, { store });
+
+    expect(store.getOpeners).toHaveBeenCalledWith({ league:'MLB', bookmaker:'pinnacle', market:'h2h', eventIds:['evt-1'] });
+    expect(result.alerts[0]).toMatchObject({ team:home, label:'SHARP_FLOW', confirmations:1 });
+    expect(result.alerts[0].evidence).toContain('market movement agrees with flow');
+    expect(result.alerts[0].movement).toMatchObject({ openPrice:150, priceDelta:-20, towardSide:true });
+    expect(result.sources.snapshots).toEqual({ available:true, openers:1 });
+  });
+
+  it('keeps running without movement when the snapshot store fails', async () => {
+    getVsin.mockResolvedValue(splits('vsin', { tickets:72, money:40 }, { tickets:28, money:60 }));
+    getActionNetwork.mockResolvedValue({ available:false, source:'action-network', games:[] });
+    const store = { getOpeners: vi.fn(async () => { throw new Error('HTTP 503'); }) };
+
+    const result = await runSharp('MLB', undefined, { store });
+
+    expect(result.ok).toBe(true);
+    expect(result.alerts[0].label).toBe('SHARP_WATCH');
+    expect(result.sources.snapshots).toEqual({ available:false, error:'HTTP 503' });
+  });
+
   it('returns no alerts when splits show no meaningful divergence', async () => {
     getVsin.mockResolvedValue(splits('vsin', { tickets:52, money:50 }, { tickets:48, money:50 }));
     getActionNetwork.mockResolvedValue({ available:false, source:'action-network', games:[] });
